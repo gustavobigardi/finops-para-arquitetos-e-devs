@@ -1,0 +1,5 @@
+// Recursos sem as tags de dono e ambiente. Ajuste os nomes para a convenção do seu time.
+resources
+| where isnull(tags['owner']) or isnull(tags['environment'])
+| where type !in~ ('microsoft.network/networkwatchers', 'microsoft.alertsmanagement/smartdetectoralertrules', 'microsoft.insights/actiongroups')
+| project name, type, resourceGroup, location, id

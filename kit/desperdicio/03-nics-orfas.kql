@@ -1,0 +1,5 @@
+// Interfaces de rede sem VM e sem private endpoint.
+resources
+| where type =~ 'microsoft.network/networkinterfaces'
+| where isnull(properties.virtualMachine) and isnull(properties.privateEndpoint)
+| project name, resourceGroup, location, id

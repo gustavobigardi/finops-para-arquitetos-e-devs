@@ -1,0 +1,6 @@
+// App Service Plans pagos sem nenhum app: você paga pela instância vazia.
+resources
+| where type =~ 'microsoft.web/serverfarms'
+| where toint(properties.numberOfSites) == 0
+| where sku.tier !~ 'Free'
+| project name, resourceGroup, location, sku = tostring(sku.name), instancias = toint(sku.capacity), id

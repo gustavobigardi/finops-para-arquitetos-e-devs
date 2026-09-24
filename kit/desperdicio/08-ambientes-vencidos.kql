@@ -1,0 +1,6 @@
+// Resource groups com a tag expires-at no passado (convenção dos preview environments).
+resourcecontainers
+| where type =~ 'microsoft.resources/subscriptions/resourcegroups'
+| extend expiraEm = todatetime(tags['expires-at'])
+| where isnotnull(expiraEm) and expiraEm < now()
+| project name, location, expiraEm, dono = tostring(tags['owner']), id

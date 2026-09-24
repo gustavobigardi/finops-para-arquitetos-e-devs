@@ -1,0 +1,6 @@
+// Snapshots com mais de 30 dias (e o tipo de armazenamento: Premium em snapshot quase nunca se justifica).
+resources
+| where type =~ 'microsoft.compute/snapshots'
+| extend criadoEm = todatetime(properties.timeCreated)
+| where criadoEm < ago(30d)
+| project name, resourceGroup, location, sku = tostring(sku.name), tamanhoGB = toint(properties.diskSizeGB), criadoEm, id

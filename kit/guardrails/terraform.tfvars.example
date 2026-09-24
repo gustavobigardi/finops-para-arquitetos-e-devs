@@ -1,0 +1,4 @@
+subscription_id          = "00000000-0000-0000-0000-000000000000"
+emails                   = ["time@empresa.com.br"]
+budget_mensal            = 5000
+resource_groups_nao_prod = ["rg-app-dev", "rg-app-qa"]

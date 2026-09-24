@@ -1,0 +1,7 @@
+// Discos gerenciados sem VM: continuam cobrando armazenamento.
+// Exclui discos em transferência (ActiveSAS) e réplicas do Site Recovery.
+resources
+| where type =~ 'microsoft.compute/disks'
+| where properties.diskState =~ 'Unattached'
+| where not(name endswith '-ASRReplica' or name startswith 'ms-asr-' or name startswith 'asrseeddisk-')
+| project name, resourceGroup, location, sku = tostring(sku.name), tamanhoGB = toint(properties.diskSizeGB), criadoEm = todatetime(properties.timeCreated), id

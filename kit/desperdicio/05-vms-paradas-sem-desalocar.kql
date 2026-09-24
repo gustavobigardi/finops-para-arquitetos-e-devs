@@ -1,0 +1,6 @@
+// VMs "paradas" pelo sistema operacional, mas não desalocadas: o compute continua sendo cobrado.
+resources
+| where type =~ 'microsoft.compute/virtualmachines'
+| extend estado = tostring(properties.extended.instanceView.powerState.code)
+| where estado =~ 'PowerState/stopped'
+| project name, resourceGroup, location, tamanho = tostring(properties.hardwareProfile.vmSize), estado, id
