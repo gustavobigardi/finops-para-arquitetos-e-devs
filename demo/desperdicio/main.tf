@@ -81,11 +81,28 @@ resource "azurerm_network_interface" "orfa" {
 }
 
 # Plano de um projeto cancelado, sem nenhum app: 04-app-service-plans-vazios.kql
+# Subscriptions Visual Studio costumam ter cota 0 para planos pagos ("Current Limit (B1 VMs): 0").
+# Se der 401 de cota, tente outra região com plano_location, outro SKU com plano_sku,
+# ou desligue com criar_plano = false. Sem o plano, a query 04 só devolve zero achado.
 resource "azurerm_service_plan" "vazio" {
+  count               = var.criar_plano ? 1 : 0
   name                = "asp-projeto-cancelado"
   resource_group_name = azurerm_resource_group.demo.name
-  location            = azurerm_resource_group.demo.location
+  location            = coalesce(var.plano_location, var.location)
   os_type             = "Linux"
-  sku_name            = "B1"
+  sku_name            = var.plano_sku
   tags                = local.tags
+}
+
+# Alternativa sem cota: um segundo disco órfão, agora Premium (≈ US$ 5/mês contra US$ 1,5 do Standard).
+# Aparece na mesma query 01 e rende a fala "além de esquecido, está no tier caro".
+resource "azurerm_managed_disk" "orfao_premium" {
+  count                = var.criar_disco_premium ? 1 : 0
+  name                 = "disk-poc-premium"
+  resource_group_name  = azurerm_resource_group.demo.name
+  location             = azurerm_resource_group.demo.location
+  storage_account_type = "Premium_LRS"
+  create_option        = "Empty"
+  disk_size_gb         = 32
+  tags                 = local.tags
 }
